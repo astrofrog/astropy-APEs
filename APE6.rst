@@ -39,13 +39,14 @@ able to converge on a stable API. Part of this is due to the fact that there is
 in fact a huge variety of 'n-dimensional datasets' and that there is very
 little in common for example between a spectrum and an image, in terms of what
 can be done with them. This has prevented the ``NDData`` class from including
-functionality, and in fact we have been adding functonality then removing it
-after we have realized that it is not general enough. An example of this is
-arithmetic - what happens when we add two n-dimensional datasets? Of course,
-the data values can be added, but what happens to the mask? To the flags? To
-the uncertainties? The truth is that there is no general recipe for dealing
-with this, and that it may be a mistake to try and define it in such a general
-way.
+much functionality, and in fact we have been adding functonality then removing
+it after we have realized that it is not general enough.
+
+An example to illustrate this issue is that of arithmetic - what happens when
+we add two n-dimensional datasets? Of course, the data values can be added, but
+what happens to the mask, to the flags, or to the uncertainties? The truth is
+that there is no general recipe for dealing with this, and that it may be a
+mistake to try and define it in such a general way.
 
 This APE takes the approach of re-thinking the purpose of NDData and trying to
 define a scope for the future.
@@ -69,13 +70,15 @@ possible answers:
    consistently.
 
 3. We want functions and methods in Astropy to know if an object passed to them
-   is an n-dimensionall data object that can be expected to have specific
+   is an n-dimensional data object that can be expected to have specific
    attributes (such as ``wcs``, ``mask``, and so on).
 
 In principle, none of these *require* a base class. We could simply agree on a
 standard for data objects that defines what certain attributes should be
 called. This is a valid solution, but at the same time, having a base class can
-enforce this and factor out some boilerplate code.
+enforce this and factor out some boilerplate code, and as described in
+`Alternatives`_, the questions raised here would apply to a base ``Image``
+class that was sub-classed as ``XRayImage``, ``CCDImage``, and so on.
 
 Proposal for the ``NDData`` class
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -84,9 +87,7 @@ The proposal in this APE is to simplify the ``NDData`` class to the extreme,
 such that it essentially does only the following things:
 
 * It defines properties that will be in common to all ``NDData`` sub-classes,
-  but does not do any input validation. In fact, several of the 'base'
-  properties can raise NotImplementedError when not implemented by a base class
-  to avoid having the user think that the property can be used.
+  but does not do any input validation.
 
 * It provides generic ``read`` and ``write`` methods that connect to the I/O
   registry, as for the ``Table`` class.
@@ -107,7 +108,9 @@ The following properties should be included in the base class:
 
 * ``data`` - the data itself. No restrictions are placed on the type of this
   data. For example, it could be a plain Numpy array, masked Numpy array, an
-  Astropy Quantity, or an h5py data buffer.
+  Astropy Quantity, or an h5py data buffer. However, we could require for
+  example that ``data`` provides a ``shape`` attribute in order to 'prove' that
+  it is an n-dimensional data object.
 
 * ``mask`` - the mask of the data, following the Numpy convention of `True`
   meaning masked, and `False` meaning unmasked. Sub-classes could choose to
@@ -119,7 +122,8 @@ The following properties should be included in the base class:
 
 * ``wcs`` - an object that can be used to describe the relationship between
   positions in 'pixel' space, and world coordinates. This can (but does not
-  have to) be an Astropy WCS object.
+  have to) be an Astropy WCS object. Once the generalized WCS system is in
+  place in Astropy, we could require this to be such an object.
 
 * ``meta`` - a dict-like object that can be used to contain arbitrary metadata.
   This could be a plain Python dict, an ordered dict, a FITS Header object, and
@@ -127,8 +131,8 @@ The following properties should be included in the base class:
 
 * ``uncertainty`` - an object describing the uncertainties in the data.
 
-If sub-classes do not support e.g. ``uncertainty``, they can simply raise a
-``NotImplementedError``.
+If sub-classes do not support some of these properties, e.g. ``uncertainty``,
+they can simply raise a ``NotImplementedError``.
 
 Handling of ``NDData`` in Astropy and affiliated packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -136,19 +140,13 @@ Handling of ``NDData`` in Astropy and affiliated packages
 If a user has a data object such as an image, it would be nice if they can use
 functions directly on this image and have them return an image object. At the
 same time, we do not want to force people to use special data containers if
-they have for example a Numpy array and a WCS object. This raises the quesiton
+they have for example a Numpy array and a WCS object. This raises the question
 of whether we should duplicate the API for all functions, to provide one
 interface for ``NDData`` subclasses, and one for separate attributes. The
-proposal here is that functions should only define a single API that takes
-separate keyword arguments for e.g. ``data``, ``mask``, and so on, but that we
-then provide a way for users to be able to call these functions with ``NDData``
-sub-classes (see `Implementation`_).
-
-Branches and pull requests
---------------------------
-
-https://github.com/astropy/astropy/pull/2855
-N/A
+proposal in this APE is that functions should only define a single API that
+takes separate keyword arguments for e.g. ``data``, ``mask``, and so on, but
+that we then provide a way for users to be able to call these functions with
+``NDData`` sub-classes (see `Implementation`_).
 
 Implementation
 --------------
@@ -168,8 +166,8 @@ definitions. For example, for the WCS, it should simply contain::
     def wcs(self, value):
         self._wcs = wcs
 
-The only exceptions to this are that the type of the unit should be checked (it
-should be an Astropy unit), but otherwise all the properties listed above
+The only exception to this is that the type of the unit should be checked (it
+should be an Astropy Unit), but otherwise all the properties listed above
 should follow this simple template.
 
 The ``read`` and ``write`` methods can be adapted from the ``Table`` class.
@@ -196,7 +194,8 @@ things:
 
 * An internal list of which properties should be sliced (for example ``meta``
   should not be sliced). ``NDData`` and its sub-classes could contain a
-  ``_slicable`` class attribute that lists properties that should be sliced.
+  ``_slicable`` class attribute that lists properties that should be sliced
+  (even if it does not guarantee they are slicable in practice).
 
 * Slicing capability on the objects stored inside the properties. If the WCS
   object is not slicable, then an error should be raised since the slicing
@@ -213,9 +212,9 @@ return these, we can implement a decorator that will automatically split up an
     def test(data, wcs=None, unit=None, n_iterations=3):
         ...
 
-We can provide a decorator called e.g. ``nddata_support``::
+We can provide a decorator called e.g. ``support_nddata``::
 
-    @nddata_support
+    @support_nddata
     def test(data, wcs=None, unit=None, n_iterations=3):
         ...
 
@@ -239,16 +238,23 @@ object (with the correct class) and will populate the properties as needed. In
 order to figure out what is returned by the function, the decorator will need
 to accept a list which gives the name of the output values::
 
-    @nddata_support(returns=['data', 'wcs'])
+    @support_nddata(returns=['data', 'wcs'])
     def test(data, wcs=None, unit=None, n_iterations=3):
         ...
 
 Finally, the decorator could be made to restrict input to specific ``NDData``
 sub-classes (and sub-classes of those)::
 
-    @nddata_support(accepts=Image, returns=['data', 'wcs'])
+    @support_nddata(accepts=Image, returns=['data', 'wcs'])
     def test(data, wcs=None, unit=None, n_iterations=3):
         ...
+
+Branches and pull requests
+--------------------------
+
+Initial decorator implementation: https://github.com/astropy/astropy/pull/2855
+
+Initial refactoring of NDData: https://github.com/astropy/astropy/pull/2905
 
 Backward compatibility
 ----------------------
