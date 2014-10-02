@@ -100,9 +100,11 @@ impossible to generalize.
 
 Furthermore, the ``NDData`` class would be made into an abstract base class, so
 that it can never be used directly by users. The idea would then be that users
-should only ever be using sub-classes, such as ``Image`` or ``Spectrum1D``. No
-function in Astropy or in affiliated packages would be required to be able to
-handle generic ``NDData`` objects.
+should only ever be using sub-classes, such as ``Image`` or ``Spectrum`` for
+example (although this APE does not specify what sub-classes should exist, and
+these are given purely as illustrative examples). No function in Astropy or in
+affiliated packages would be required to be able to handle generic ``NDData``
+objects.
 
 The following properties should be included in the base class:
 
@@ -114,7 +116,9 @@ The following properties should be included in the base class:
 
 * ``mask`` - the mask of the data, following the Numpy convention of `True`
   meaning masked, and `False` meaning unmasked. Sub-classes could choose to
-  connect this to ``data.mask``.
+  connect this to ``data.mask``. Masks do not need to be Numpy arrays, they
+  could be for example 'lazy' masks based on functions that will be evaluated
+  on-the-fly.
 
 * ``unit`` - the unit of the data values, which should be an Astropy Unit (this
   is one place where it makes sense to place a restriction on the type).
@@ -133,6 +137,9 @@ The following properties should be included in the base class:
 
 If sub-classes do not support some of these properties, e.g. ``uncertainty``,
 they can simply raise a ``NotImplementedError``.
+
+Specific functionality such as uncertainty handling and arithmetic can be
+developed as mix-in classes that can be used by ``NDData`` sub-classes.
 
 Handling of ``NDData`` in Astropy and affiliated packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -201,6 +208,11 @@ things:
   object is not slicable, then an error should be raised since the slicing
   cannot be successfully carried out. The example code above could include a
   nice error message if a property is not slicable.
+
+Note that slicing does not always have to return an array - for example in the
+case of WCS, it would return a new WCS object that would map the pixel
+coordinates in the subset to world coordinates, so it would simply be an
+updated transformation rather than an array slice.
 
 Faciliating the use of ``NDData`` sub-classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
