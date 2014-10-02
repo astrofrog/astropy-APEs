@@ -1,7 +1,7 @@
 NDData Plan
 -----------
 
-author: Thomas Robitaille
+author: Thomas Robitaille, Perry Greenfield, Matt Craig
 
 date-created:
 
