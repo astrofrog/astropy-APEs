@@ -17,7 +17,7 @@ Abstract
 This APE is intended to provide a long-term plan for the ``astropy.nddata``
 sub-package. The package has been the subject of continuous debate since the
 start of the astropy project, and has changed in scope several times, so this
-APE is aimed at agreeeing on the scope and future of the sub-package.
+APE is aimed at agreeing on the scope and future of the sub-package.
 
 Detailed description
 --------------------
@@ -98,13 +98,13 @@ such that it essentially does only the following things:
 The ``NDData`` class should **not** define any arithmetic operations, which are
 impossible to generalize.
 
-Furthermore, the ``NDData`` class would be made into an abstract base class, so
-that it can never be used directly by users. The idea would then be that users
-should only ever be using sub-classes, such as ``Image`` or ``Spectrum`` for
-example (although this APE does not specify what sub-classes should exist, and
-these are given purely as illustrative examples). No function in Astropy or in
-affiliated packages would be required to be able to handle generic ``NDData``
-objects.
+In practice, users would very rarely use the ``NDData`` class directly,
+instead using sub-classes, such as ``Image`` or ``Spectrum`` for example
+(although this APE does not specify what sub-classes should exist, and these
+are given purely as illustrative examples). In addition, developers would not
+need to write functions that can take fully generic ``NDData`` objects, but
+could restrict themselves to specific sub-classes such as ``Image`` or
+``Spectrum``.
 
 The following properties should be included in the base class:
 
@@ -120,9 +120,9 @@ The following properties should be included in the base class:
   could be for example 'lazy' masks based on functions that will be evaluated
   on-the-fly.
 
-* ``unit`` - the unit of the data values, which should be an Astropy Unit (this
-  is one place where it makes sense to place a restriction on the type).
-  Sub-classes could choose to connect this to ``data.unit``
+* ``unit`` - the unit of the data values, which will be internally
+  represented as an Astropy Unit. Sub-classes could choose to connect this to
+  ``data.unit``
 
 * ``wcs`` - an object that can be used to describe the relationship between
   positions in 'pixel' space, and world coordinates. This can (but does not
@@ -133,13 +133,18 @@ The following properties should be included in the base class:
   This could be a plain Python dict, an ordered dict, a FITS Header object, and
   so on, provided that it offers dict-like item access and iteration.
 
-* ``uncertainty`` - an object describing the uncertainties in the data.
-
-If sub-classes do not support some of these properties, e.g. ``uncertainty``,
-they can simply raise a ``NotImplementedError``.
-
 Specific functionality such as uncertainty handling and arithmetic can be
 developed as mix-in classes that can be used by ``NDData`` sub-classes.
+
+Note that no ``uncertainty`` attribute has been included here but could be
+added to the list of 'core' attributes in future once we settle on an
+infrastructure for handling uncertainties.
+
+The base class would **not** include methods such as ``__array__``,
+``__array_prepare__``, and so on which allow a class to be treated as a Numpy
+array. This behavior has been identified as being potentially ambiguous in
+the general case because it will depend on the details of e.g. how masks are
+handled.
 
 Handling of ``NDData`` in Astropy and affiliated packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -171,7 +176,7 @@ definitions. For example, for the WCS, it should simply contain::
 
     @wcs.setter
     def wcs(self, value):
-        self._wcs = wcs
+        self._wcs = value
 
 The only exception to this is that the type of the unit should be checked (it
 should be an Astropy Unit), but otherwise all the properties listed above
@@ -196,6 +201,10 @@ done by simply having code similar to the following inside ``__getitem__``::
             new.wcs = self.wcs[slice]
         ...
 
+Note that this is only meant as an illustration of the idea suggested here,
+and the final implementation will likely differ from this - but the basic
+idea is that the slicing would be delegated to the member attributes.
+
 That is, the slicing is simply delegated to the objects. This requires two
 things:
 
@@ -217,7 +226,31 @@ updated transformation rather than an array slice.
 Faciliating the use of ``NDData`` sub-classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In order to make it possible for functions to accept ``NDData`` sub-classes and
+One question that has come up as part of several affiliated packages is how
+to deal with ``NDData`` objects in functions. For example, if we consider a
+``downsample`` function that can downsample an image, should the function
+accept only ``Image`` objects (which inherit from ``NDData``)? Should it also
+accept plain Numpy arrays? If so, how do we pass any additional meta-data
+such as WCS? Should we return a downsampled Numpy array and downsampled WCS,
+or a single downsampled ``Image`` instance? In this example, one option would
+be to provide two APIs, one for ``Image`` and one for separate Numpy arrays
+and attributes, but maintinaing two parallel APIs is not an ideal solution.
+An alternative is for each function to encode the logic of checking the input
+type and deciding on the output type based on the output type. However, this
+means repeating a lot of similar code such as::
+
+    def downsample(data, wcs=None)
+
+        if isinstance(data, Image):
+            if wcs is not None:
+                raise ValueError("wcs cannot be specified if Image instance was passed")
+            wcs = data.wcs
+            data = data.data
+
+and this will become a lot more complex once more attributes are needed by
+the function.
+
+In order to make it easier for functions to accept ``NDData`` sub-classes and
 return these, we can implement a decorator that will automatically split up an
 ``NDData`` object as needed. Let us consider the following function::
 
@@ -261,6 +294,10 @@ sub-classes (and sub-classes of those)::
     def test(data, wcs=None, unit=None, n_iterations=3):
         ...
 
+With this decorator, the functions could be seamlessly used either with
+separate arguments (e.g. Numpy array and WCS) or with subclasses of
+``NDData`` such as ``Image``.
+
 Branches and pull requests
 --------------------------
 
@@ -280,10 +317,33 @@ assumed to be a very small fraction (if any) of users.
 Alternatives
 ------------
 
-One alternative is to remove the ``NDData`` class alltogether, but this only
-defers the questions raised here to the more specific sub-classes - for example
-if we create an ``Image`` class, this will still be a generic base class for
-``CCDImage``, ``XRayImage``, and so on, and the same issues will arise.
+One alternative is to remove the ``NDData`` class altogether and to start
+the base classes at the level of ``Spectrum`` or ``Image``. In this case many
+of this ideas of this APE (including the attribute names, decorators, etc.)
+would still apply to these base classes. The benefits of having a base
+``NDData`` class instead of starting at the ``Image`` and ``Spectrum`` level
+are that:
+
+* The ``NDData`` class enforces the naming of the base properties to ensure
+  consistency across all sub-classes.
+
+* It allows slicing to be implemented at the core level, whereas this would
+  need to be repeated in each base class if we had e.g. ``Spectrum``,
+  ``Image``, ``SpectralCube`` as the base classes.
+
+* It allows the connection to the unified I/O framework to be defined once,
+  whereas this would also need to be repeated in each base class otherwise.
+
+On the other hand, the downsides of having a core ``NDData`` class is that it
+reduces flexibility of the sub-classes - for instance ``Spectrum`` has to be
+implemented taking into consideration the restrictions on e.g. attribute
+names defined by the sub-classes. In the
+`spectral-cube <http://spectral-cube.readthedocs.org>`_ package, at the moment
+we do not have a ``data`` attribute because we have a custom masking
+framework and define attributes like ``unmasked_data``. Of course, we should
+aim to make this more compliant with what is decided here, but this is just
+to demonstrate that this type of flexibility may be lost. However, this may
+be a good thing as it enforces consistency for users.
 
 Decision rationale
 ------------------
