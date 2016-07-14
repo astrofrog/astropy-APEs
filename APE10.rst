@@ -104,7 +104,7 @@ active Python version. However, there is a solution, which is described in the
 `Jupyter roadmap <https://github.com/jupyter/roadmap/blob/master/accepted/migration-to-python-3-only.md#multiple-source-distributions>`_.
 Essentially, the solution for Python 3-only releases is to upload tar files
 that have a ``-py3.x`` suffix (one file per Python 3.x version), or hopefully,
-if this is fixed in `pip`_, a single file with a ``-py3`` suffix would be
+if this is fixed in `pip <https://pip.pypa.io/en/stable/>`_, a single file with a ``-py3`` suffix would be
 sufficient (e.g. ``astropy-3.0-py3.5.tar.gz``).
 
 
