@@ -22,7 +22,7 @@ Detailed description
 --------------------
 
 A number of scientific Python projects, including IPython, Matplotlib, Sympy,
-and others have now signed the `Python 3 statement/pledge
+and others have now signed the `Python 3 statement
 <https://python3statement.github.io>`_ which states that scientific Python
 packages will drop support for Python 2 no longer than 2020. In fact, the
 IPython developers have now released `IPython 5.0
@@ -30,7 +30,7 @@ IPython developers have now released `IPython 5.0
 last major release to support Python 2 - since it is a long term support (LTS)
 release, there will be 5.x bug fix releases until some time in 2019, but future
 major releases that add new features, starting with 6.0 (in 2017), will support
-only Python 3. This APE proposes that the Astropy project should also sign this
+only Python 3. This APE proposes that the Astropy project should also sign the Python 3 statement
 statement, and provides a target roadmap for this to happen.
 
 Roadmap
