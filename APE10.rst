@@ -132,10 +132,10 @@ Python 2 until 2019, for example::
     v3.0 - LTS - December 2019 (supported with bug fixes for two years)
 
 This would allow more time for the PyPI limitations mentioned above to be
-resolved and more time for developers to make the transition to Python 3.
-However, if we actually want users to virtually all be using Python 3 by 2020,
-then it does not make sense to delay the proposed release plan in this way,
-since the developers and infrastructure need to be ready for Python 3-only
+resolved and more time for developers to make the transition to Python 3. On the
+other hand, if we actually want users to virtually all be using Python 3 by
+2020, then it does not make sense to delay the proposed release plan in this
+way, since the developers and infrastructure need to be ready for Python 3-only
 releases before the users are.
 
 Decision rationale
