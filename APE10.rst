@@ -91,7 +91,7 @@ Implementation
 In practice, dropping Python 2.7 support will involve, amongst other things:
 
 * Removing the bundled `six <https://pythonhosted.org/six/>`_ package, and
-  update all the code that used ``astropy.extern.six`` to use the Python 3
+  updating all the code that used ``astropy.extern.six`` to use the Python 3
   syntax directly.
 * Removing Python 2.7 from the configuration for the continuous integration
   services (such as Travis and AppVeyor at the time of writing)
@@ -99,7 +99,7 @@ In practice, dropping Python 2.7 support will involve, amongst other things:
 * Removing any backports that may exist for Python 2.7 compatibility
 * Updating the documentation to remove any mention of Python 2.7, as well as
   making sure that Python 3.x is not presented as a special case.
-* Remove Python 2 and 2.7 from the PyPI classifiers
+* Removing Python 2 and 2.7 from the PyPI classifiers
 
 Challenges
 ----------
@@ -145,7 +145,8 @@ There are several benefits to following the plan proposed above:
 
 * We will be able to start using Python 3-only features internally, including
   for example function annotations (e.g., for units), matrix multiplication
-  (e.g., for coordinates).
+  (e.g., for coordinates; note that this will only be possible once we support
+  only Python 3.5+)
 
 Alternatives
 ------------
