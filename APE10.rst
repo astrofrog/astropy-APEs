@@ -37,18 +37,22 @@ Roadmap
 -------
 
 The proposed roadmap for releases, including past releases for reference, is the
-following::
+following:
 
-    v1.0 - LTS - February 19, 2015 (supported with bug fixes until June 2017)
-    v1.1 - December 11, 2015
-    v1.2 - June 23, 2016
-    v1.3 - December 2016
-    v2.0 - LTS - June 2017 (supported with bug fixes until end of 2019)
-    v3.0 - December 2017 - first release to support only Python 3+
-    v3.1 - June 2018
-    v3.2 - December 2018
-    v3.3 - June 2019
-    v4.0 - LTS - December 2019 (supported with bug fixes for two years)
+==========   ==================  ==========================================
+Version      Release date        Notes
+==========   ==================  ==========================================
+v1.0 - LTS   February 19, 2015   Supported with bug fixes until June 2017
+v1.1         December 11, 2015
+v1.2         June 23, 2016
+v1.3         December 2016
+v2.0 - LTS   June 2017           Supported with bug fixes until end of 2019
+v3.0         December 2017       First release to support only Python 3+
+v3.1         June 2018
+v3.2         December 2018
+v3.3         June 2019
+v4.0 - LTS   December 2019       Supported with bug fixes for two years)
+==========   ==================  ==========================================
 
 Note that v1.0, v2.0, and v4.0 are marked as long-term support releases (LTS),
 which means that they are typically supported with bug fixes for at least two
@@ -60,7 +64,26 @@ not support Python 2.
 Note that v3.0 would not be an LTS release, since we would
 otherwise need to maintain two LTS releases in parallel. This is a one-off
 deviation from the version numbering policy outlined in `APE 2
-<https://github.com/astropy/astropy-APEs/blob/master/APE2.rst>`_
+<https://github.com/astropy/astropy-APEs/blob/master/APE2.rst>`_.
+
+In order to decide which Python 3.x releases to support, we would follow the
+Python support calendar: the Python 3.x versions supported by an Astropy
+release would be the versions supported by the Python developers. Using the
+`current Python support calendar
+<https://docs.python.org/devguide/#status-of-python-branches>`_, this would
+mean that the following Astropy versions would support the following Python 3.x
+versions:
+
+==========    ===============================
+Version       Minimum required Python version
+==========    ===============================
+v2.0 - LTS    Python 2.7 or Python 3.3+
+v3.0          Python 3.4+
+v3.1          Python 3.4+
+v3.2          Python 3.4+
+v3.3          Python 3.5+
+v4.0 - LTS    Python 3.5+
+==========    ===============================
 
 Implementation
 --------------
@@ -106,7 +129,6 @@ Essentially, the solution for Python 3-only releases is to upload tar files
 that have a ``-py3.x`` suffix (one file per Python 3.x version), or hopefully,
 if this is fixed in `pip <https://pip.pypa.io/en/stable/>`_, a single file with a ``-py3`` suffix would be
 sufficient (e.g. ``astropy-3.0-py3.5.tar.gz``).
-
 
 Benefits
 --------
