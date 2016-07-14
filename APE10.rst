@@ -83,19 +83,30 @@ Challenges
 
 There are two main challenges with the plan outlined above:
 
-* Once we make the switch to a Python 3-only code base, between v2.0 and v3.0,
-  people will no longer be able to contribute code to Astropy without using
-  Python 3. This means that even though users can in theory wait until the end
-  of 2019 to switch to Python 3, developers and contributors will need to make
-  the switch (at least for their Astropy development environment) as soon as
-  2017.
+Developers will need to use Python 3
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* If we upload Astropy v3.0 to PyPI, and it does not support Python 2, then if
-  Python 2.7 users try and pip install Astropy, the install or import will fail. This
-  is because PyPI does not compare the current Python version to the PyPI
-  meta-data for the package (which may indicate for example whether the package
-  is Python 2-compatible), and will download Astropy v3.0 regardless of the
-  active Python version. However, there is a solution, which is …
+Once we make the switch to a Python 3-only code base, between v2.0 and v3.0,
+people will no longer be able to contribute code to Astropy without using
+Python 3. This means that even though users can in theory wait until the end of
+2019 to switch to Python 3, developers and contributors will need to make the
+switch (at least for their Astropy development environment) as soon as 2017.
+
+Packages on PyPI
+^^^^^^^^^^^^^^^^^
+
+If we upload Astropy v3.0 to PyPI, and it does not support Python 2, then if
+Python 2.7 users try and pip install Astropy, the install or import will fail.
+This is because PyPI does not compare the current Python version to the PyPI
+meta-data for the package (which may indicate for example whether the package
+is Python 2-compatible), and will download Astropy v3.0 regardless of the
+active Python version. However, there is a solution, which is described in the 
+`Jupyter roadmap <https://github.com/jupyter/roadmap/blob/master/accepted/migration-to-python-3-only.md#multiple-source-distributions>`_.
+Essentially, the solution for Python 3-only releases is to upload tar files
+that have a ``-py3.x`` suffix (one file per Python 3.x version), or hopefully,
+if this is fixed in `pip`_, a single file with a ``-py3`` suffix would be
+sufficient (e.g. ``astropy-3.0-py3.5.tar.gz``).
+
 
 Benefits
 --------
