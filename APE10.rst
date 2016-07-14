@@ -65,11 +65,11 @@ deviation from the version numbering policy outlined in `APE 2
 Implementation
 --------------
 
-In practice, dropping Python 2.7 support will involve:
+In practice, dropping Python 2.7 support will involve, amongst other things:
 
 * Removing the bundled `six <https://pythonhosted.org/six/>`_ package, and
   update all the code that used ``astropy.extern.six`` to use the Python 3
-  syntax.
+  syntax directly.
 * Removing Python 2.7 from the configuration for the continuous integration
   services (such as Travis and AppVeyor at the time of writing)
 * Making sure that the documentation on ReadTheDocs is built using Python 3.x
@@ -91,8 +91,8 @@ There are two main challenges with the plan outlined above:
   2017.
 
 * If we upload Astropy v3.0 to PyPI, and it does not support Python 2, then if
-  Python 2.7 try and pip install Astropy, the install or import will fail. This
-  is because PyPI does not check the current Python version against the PyPI
+  Python 2.7 users try and pip install Astropy, the install or import will fail. This
+  is because PyPI does not compare the current Python version to the PyPI
   meta-data for the package (which may indicate for example whether the package
   is Python 2-compatible), and will download Astropy v3.0 regardless of the
   active Python version. However, there is a solution, which is …
@@ -118,7 +118,7 @@ Alternatives
 ------------
 
 An alternative plan would be to continue making major releases that support
-Python 2 until 2019, for example:
+Python 2 until 2019, for example::
 
     v1.0 - LTS - February 19, 2015 (supported with bug fixes until June 2017)
     v1.1 - December 11, 2015
