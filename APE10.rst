@@ -55,8 +55,12 @@ which means that they are typically supported with bug fixes for at least two
 years. The above roadmap proposes that the last Python 2-compatible release will
 be v2.0, which we will support with bug fixes until the end of 2019. In the mean
 time, v3.0, to be released in December 2017, will be the first release that does
-not support Python 2. Note that v3.0 would not be an LTS release, since we would
-otherwise need to maintain two LTS releases in parallel.
+not support Python 2.
+
+Note that v3.0 would not be an LTS release, since we would
+otherwise need to maintain two LTS releases in parallel. This is a one-off
+deviation from the version numbering policy outlined in `APE 2
+<https://github.com/astropy/astropy-APEs/blob/master/APE2.rst>`_
 
 Implementation
 --------------
