@@ -16,43 +16,49 @@ Abstract
 
 The purpose of this APE is to set out a roadmap for future releases of the
 Astropy core package, in particular to identify the process for switching to
-releases that support only Python 3.
+releases that support only Python 3 and ending support for Python 2.7 in
+December 2019.
 
 Detailed description
 --------------------
 
-A number of scientific Python projects, including IPython, Matplotlib, Sympy,
+Python 2.7 will cease to be supported on January 1st 2020. As a result, a
+number of scientific Python projects, including IPython, Matplotlib, Sympy,
 and others have now signed the `Python 3 statement
 <https://python3statement.github.io>`_ which states that scientific Python
-packages will drop support for Python 2 no longer than 2020. In fact, the
+packages will drop support for Python 2 no later than 2020. For instance, the
 IPython developers have now released `IPython 5.0
 <http://blog.jupyter.org/2016/07/08/ipython-5-0-released/>`_, which will be the
-last major release to support Python 2 - since it is a long term support (LTS)
-release, there will be 5.x bug fix releases until some time in 2019, but future
-major releases that add new features, starting with 6.0 (in 2017), will support
-only Python 3. This APE proposes that the Astropy project should also sign the Python 3 statement
-statement, and provides a target roadmap for this to happen.
+last major release to support Python 2. This APE proposes that the Astropy
+project should also sign the Python 3 statement statement, and provides a
+target roadmap for future releases.
 
 Roadmap
 -------
 
-The proposed roadmap for releases, including past releases for reference, is the
-following:
+At the time of writing, the following releases have been made since (and including) v1.0:
 
-==========   ==================  ==========================================
-Version      Release date        Notes
-==========   ==================  ==========================================
-v1.0 - LTS   February 19, 2015   Supported with bug fixes until June 2017
+==========   ======================   ==========================================
+Version      Release date             Notes
+==========   ======================   ==========================================
+v1.0 - LTS   February 19, 2015        Supported with bug fixes until June 2017
 v1.1         December 11, 2015
 v1.2         June 23, 2016
+==========   ======================   ==========================================
+
+The proposed roadmap for future releases is the following:
+
+==========   ======================   ==========================================
+Version      Planned release date     Notes
+==========   ======================   ==========================================
 v1.3         December 2016
-v2.0 - LTS   June 2017           Supported with bug fixes until end of 2019
-v3.0         December 2017       First release to support only Python 3+
+v2.0 - LTS   June 2017                Supported with bug fixes until end of 2019
+v3.0         December 2017            First release to support only Python 3+
 v3.1         June 2018
 v3.2         December 2018
 v3.3         June 2019
-v4.0 - LTS   December 2019       Supported with bug fixes for two years)
-==========   ==================  ==========================================
+v4.0 - LTS   December 2019            Supported with bug fixes for two years)
+==========   ======================   ==========================================
 
 Note that v1.0, v2.0, and v4.0 are marked as long-term support releases (LTS),
 which means that they are typically supported with bug fixes for at least two
@@ -64,7 +70,7 @@ not support Python 2.
 Note that v3.0 would not be an LTS release, since we would
 otherwise need to maintain two LTS releases in parallel. This is a one-off
 deviation from the version numbering policy outlined in `APE 2
-<https://github.com/astropy/astropy-APEs/blob/master/APE2.rst>`_.
+<https://github.com/astropy/astropy-APEs/blob/master/APE2.rst>`_, and subsequent releases will follow the pattern established by APE 2.
 
 In order to decide which Python 3.x releases to support, we would follow the
 Python support calendar: the Python 3.x versions supported by an Astropy
@@ -104,7 +110,7 @@ In practice, dropping Python 2.7 support will involve, amongst other things:
 Challenges
 ----------
 
-There are two main challenges with the plan outlined above:
+There are a few challenges to consider with the plan outlined above:
 
 Developers will need to use Python 3
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -123,17 +129,45 @@ Python 2.7 users try and pip install Astropy, the install or import will fail.
 This is because PyPI does not compare the current Python version to the PyPI
 meta-data for the package (which may indicate for example whether the package
 is Python 2-compatible), and will download Astropy v3.0 regardless of the
-active Python version. However, there is a solution, which is described in the 
+active Python version. However, there is a solution, which is described in the
 `Jupyter roadmap <https://github.com/jupyter/roadmap/blob/master/accepted/migration-to-python-3-only.md#multiple-source-distributions>`_.
 Essentially, the solution for Python 3-only releases is to upload tar files
 that have a ``-py3.x`` suffix (one file per Python 3.x version), or hopefully,
 if this is fixed in `pip <https://pip.pypa.io/en/stable/>`_, a single file with a ``-py3`` suffix would be
 sufficient (e.g. ``astropy-3.0-py3.5.tar.gz``).
 
+Current pull requests
+^^^^^^^^^^^^^^^^^^^^^
+
+The pull request(s) that will remove Python 2 compatibility may create
+conflicts with many of the open pull requests at the time - therefore it would
+make sense to try and make sure the number of open pull requests at the time is
+down to a minimum. This may be easiest to do straight after the v2.0 release,
+according to the calendar above.
+
+Maintenance of v2.0 LTS
+^^^^^^^^^^^^^^^^^^^^^^^
+
+According to the proposed release calendar, the v2.0 LTS release would be
+supported until the end of 2019. However, soon after the v2.0 release, the
+Astropy code will no longer be Python 2-compatible. As a result, pull requests
+that subsequently fix bugs in Astropy in master will in some cases not be
+easily backportable. One possible solution would be to also accept bug fixes in
+the v2.0.x branch and forward-port them to master.
+
 Benefits
 --------
 
 There are several benefits to following the plan proposed above:
+
+* Maintaining a Python 3-only code base will be significantly easier, because
+  developers won't have to know both 2.x and 3.x (and the `six
+  <https://pypi.python.org/pypi/six>`_ package).
+
+* We will be able to start using Python 3-only features internally, including
+  for example function annotations (e.g., for units), matrix multiplication
+  (e.g., for coordinates; note that this will only be possible once we support
+  only Python 3.5+)
 
 * Since we will need to keep adding Python 3.x releases to the continuous
   integration over the coming years, we will at least be able to remove Python
@@ -142,11 +176,6 @@ There are several benefits to following the plan proposed above:
 * Since developers/contributors will need to switch to using Python 3 for
   Astropy development, we will be training more people to do this transition,
   who will then be able to help their colleagues also make the transition.
-
-* We will be able to start using Python 3-only features internally, including
-  for example function annotations (e.g., for units), matrix multiplication
-  (e.g., for coordinates; note that this will only be possible once we support
-  only Python 3.5+)
 
 Alternatives
 ------------
@@ -166,11 +195,11 @@ Python 2 until 2019, for example::
     v3.0 - LTS - December 2019 (supported with bug fixes for two years)
 
 This would allow more time for the PyPI limitations mentioned above to be
-resolved and more time for developers to make the transition to Python 3. On the
-other hand, if we actually want users to virtually all be using Python 3 by
-2020, then it does not make sense to delay the proposed release plan in this
-way, since the developers and infrastructure need to be ready for Python 3-only
-releases before the users are.
+resolved and more time for developers to make the transition to Python 3. On
+the other hand, if we want users to all be using Python 3 by 2020, then it does
+not make sense to delay the proposed release plan in this way, since the
+developers and infrastructure need to be ready for Python 3-only releases
+before the users are.
 
 Decision rationale
 ------------------
