@@ -33,6 +33,13 @@ last major release to support Python 2. This APE proposes that the Astropy
 project should also sign the Python 3 statement statement, and provides a
 target roadmap for future releases.
 
+It is important to note that ending support for Python 2 by the end of 2019
+does not mean that Python 2 users will no longer be able to install or use
+Astropy from 2020 onwards. Existing Astropy releases will remain available
+indefinitely. Instead, the proposed roadmap means that only new features
+developed after mid-2017 will be available only to Python 3 users, and that
+we will not fix bugs for Python 2 after 2019.
+
 Roadmap
 -------
 
