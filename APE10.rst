@@ -136,12 +136,13 @@ Python 2.7 users try and pip install Astropy, the install or import will fail.
 This is because PyPI does not compare the current Python version to the PyPI
 meta-data for the package (which may indicate for example whether the package
 is Python 2-compatible), and will download Astropy v3.0 regardless of the
-active Python version. However, there is a solution, which is described in the
-`Jupyter roadmap <https://github.com/jupyter/roadmap/blob/master/accepted/migration-to-python-3-only.md#multiple-source-distributions>`_.
-Essentially, the solution for Python 3-only releases is to upload tar files
-that have a ``-py3.x`` suffix (one file per Python 3.x version), or hopefully,
-if this is fixed in `pip <https://pip.pypa.io/en/stable/>`_, a single file with a ``-py3`` suffix would be
-sufficient (e.g. ``astropy-3.0-py3.5.tar.gz``).
+active Python version. One possible solution is described in the
+`Jupyter roadmap <https://github.com/jupyter/roadmap/blob/master/accepted/migration-to-python-3-only.md#multiple-source-distributions>`_, which is to upload tar files
+that have a ``-py3.x`` suffix (one file per Python 3.x version), or,
+if this is fixed in `pip <https://pip.pypa.io/en/stable/>`_, a single file with a ``-py3`` suffix (e.g. ``astropy-3.0-py3.5.tar.gz``). This is currently 
+`under discussion <https://github.com/pypa/pip/pull/3847>`_ with the pip
+developers. In any case, there will likely be a solution in place by early 2017 for IPython 6.0, so that this should not be a problem by the end of December 2017 for the v3.0 release of Astropy.
+
 
 Current pull requests
 ^^^^^^^^^^^^^^^^^^^^^
