@@ -189,18 +189,19 @@ Alternatives
 ------------
 
 An alternative plan would be to continue making major releases that support
-Python 2 until 2019, for example::
+Python 2 until 2019, for example:
 
-    v1.0 - LTS - February 19, 2015 (supported with bug fixes until June 2017)
-    v1.1 - December 11, 2015
-    v1.2 - June 23, 2016
-    v1.3 - December 2016
-    v2.0 - LTS - June 2017 (supported with bug fixes until end of 2019)
-    v2.1 - December 2017
-    v2.2 - June 2018
-    v2.3 - December 2018
-    v2.4 - June 2019 - last release to support Python 2.7
-    v3.0 - LTS - December 2019 (supported with bug fixes for two years)
+==========   ======================   ==========================================
+Version      Planned release date     Notes
+==========   ======================   ==========================================
+v1.3         December 2016
+v2.0 - LTS   June 2017                Supported with bug fixes until end of 2019
+v2.1         December 2017            
+v2.2         June 2018
+v2.3         December 2018
+v2.4         June 2019                Last release to support Python 2.7
+v3.0 - LTS   December 2019            Supported with bug fixes for two years
+==========   ======================   ==========================================
 
 This would allow more time for the PyPI limitations mentioned above to be
 resolved and more time for developers to make the transition to Python 3. On
