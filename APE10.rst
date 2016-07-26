@@ -64,7 +64,7 @@ v3.0         December 2017            First release to support only Python 3+
 v3.1         June 2018
 v3.2         December 2018
 v3.3         June 2019
-v4.0 - LTS   December 2019            Supported with bug fixes for two years)
+v4.0 - LTS   December 2019            Supported with bug fixes for two years
 ==========   ======================   ==========================================
 
 Note that v1.0, v2.0, and v4.0 are marked as long-term support releases (LTS),
