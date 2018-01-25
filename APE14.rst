@@ -19,14 +19,14 @@ Astronomical data are often provided with information about the “real-world”
 coordinates that correspond to pixel coordinates. This mapping is the essence of
 the “World Coordinate System (WCS)” concept. In addition to FITS WCS (the origin
 of the “WCS” term), other WCS standards/representations are becoming necessary
-for new missions and observatories (e.g. the James Webb Space Telescope or the
+for new missions and observatories (e.g., the James Webb Space Telescope or the
 Large Synoptic Survey Telescope). In order to build functionality in Astropy and
 affiliated packages that may require use of WCS, having to deal with different
 kinds of WCS objects with different APIs will be essentially impossible. Thus,
 the purpose of this APE is to define a standardized interface to WCS objects
 based on simple objects (strings, scalars, and arrays). Packages implementing
 WCS objects will then be able to either modify their classes to conform to the
-API recommended here, or build thin wrappers that conform to the API. The APE
+API recommended here or build thin wrappers that conform to the API. The APE
 also provides a recommendation for a high-level object to be implemented in
 Astropy that understands familiar Python objects such as ``SkyCoord``, ``Time``,
 and other Astropy classes.
@@ -56,14 +56,14 @@ data. While we use pixel as a shorthand, this need not be only two-dimensional
 (the typical usage of *pixel*) - it includes one-dimensional (e.g., spectral
 axes), or more-than-2-dimensional (e.g., data cubes). Similarly *world* in this
 context is a generalized concept of any sort of physical coordinate used in the
-data. Exactly what that physical interpretation is is not specified in the
+data. The precise physical interpretation is not specified in the
 concept of WCS. For the purposes of this APE, *world* could even be an
 intermediate state of knowledge. E.g., for the unity transformation the world
-coordinate *is* the pixel coordinate, for example if no calibration information
+coordinate *is* the pixel coordinate, for example, if no calibration information
 has yet been determined. But some sense of direction and a language for the
 physical type and representation of a world coordinate needs to be conveyed in
 any practical implementation of WCS. A common understanding of how to convey
-that information, and represent it in Python, is the primary subject of this
+that information and represent it in Python is the primary subject of this
 APE.
 
 Scope
@@ -74,7 +74,7 @@ coordinate transform APIs. A future APE may define the API for accessing
 “intermediate frames” as used in gWCS or the LSST transform systems. This APE
 is only intended to define a clear API for converting from pixel coordinates to
 a specific end set of “world” coordinates (as defined above). This APE doesn’t
-focus on how to get intermediate frames if they are present, or combining
+focus on how to get intermediate frames if they are present or how to combine
 together multiple steps of a transformation - while such functionality is useful
 and should be *compatible* with this APE’s interface, an API for these
 operations is out-of-scope for this APE. This APE also does not address how to
@@ -123,7 +123,7 @@ follows the buffer protocol described in `PEP3118
 Numpy arrays (which do follow the buffer protocol). This allows for other array
 types, such as the `built-in Python array
 <https://docs.python.org/3/library/array.html>`_ objects or future advanced data
-structures
+structures.
 
 The following class shows the required properties and methods the uniform
 low-level API recommends:
@@ -471,7 +471,7 @@ simpler solution would have been to use the class object *itself* as the key.
 
 Additionally, for ``world_axis_physical_types``, an alternative was considered
 of adopting a much more general set of terms vs UCD1+ such as ``"celestial"``,
-``"spectral"``, etc. And just coming up with the list in this APE (possibly
+``"spectral"``, etc. and just coming up with the list in this APE (possibly
 using terms that approxmiately align with the STC standard).  But it was decided
 that adopting the VO UCD1+ would be best because it would not lead to Astropy
 needing to maintain a separate "standard" of terminology where one already
